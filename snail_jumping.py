@@ -229,6 +229,10 @@ while True:
 
         score_message = text_font.render (f'Your score: {score}', False, (111,196,169))
         score_message_rect = score_message.get_rect(center=(400,330))
+
+        high_score_message = text_font.render (f'High score: {actual_high_score}', False, (111,196,169))
+        high_score_message_rect = high_score_message.get_rect(center=(400,370))
+
         screen.blit(tittle_surface,tittle_rect)
 
         #Overscreen for the first time you play
@@ -238,12 +242,14 @@ while True:
         #Overscreen after you lose
         else:
             screen.blit(score_message,score_message_rect)
-            if score > actual_high_score:
-
-                actual_high_score=score
-                high_score_file=open("high_score.json", "w")
+            if score > actual_high_score: #Sets new high score in local variable and .json file
+                actual_high_score = score
+                high_score_file = open("high_score.json", "w")
                 json.dump({"high_score" :score}, high_score_file, indent=1)
                 high_score_file.close()
+            screen.blit(high_score_message,high_score_message_rect)
+            
+
 
 
     #Stuff needed
