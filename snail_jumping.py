@@ -9,11 +9,17 @@
     #Music:
         #https://opengameart.org/content/5-chiptunes-action
 
+#
+# {
+#     "high_score":"0"
+# }
+
 #GAME CODE
 #Libraries needed
 import pygame
 from sys import exit
 from random import randint, choice
+import json
 
 #Classes
 class Player (pygame.sprite.Sprite): #Player class
@@ -117,6 +123,13 @@ clock = pygame.time.Clock()
 game_active = False
 start_time = 0
 score = 0
+
+#Open high score json file
+high_score_file=open("high_score.json", "r")
+high_score = json.load(high_score_file)
+
+actual_high_score=(high_score['high_score'])
+
 
 #Groups
 player = pygame.sprite.GroupSingle()
@@ -225,6 +238,13 @@ while True:
         #Overscreen after you lose
         else:
             screen.blit(score_message,score_message_rect)
+            if score > actual_high_score:
+
+                actual_high_score=score
+                high_score_file=open("high_score.json", "w")
+                json.dump({"high_score" :score}, high_score_file, indent=1)
+                high_score_file.close()
+
 
     #Stuff needed
     pygame.display.update() #Game display
