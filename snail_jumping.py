@@ -9,10 +9,6 @@
     #Music:
         #https://opengameart.org/content/5-chiptunes-action
 
-#
-# {
-#     "high_score":"0"
-# }
 
 #GAME CODE
 #Libraries needed
@@ -37,7 +33,7 @@ class Player (pygame.sprite.Sprite): #Player class
 
         self.jump_sound = pygame.mixer.Sound('audio/jump.mp3')
         self.jump_sound.set_volume(0.075)
-        
+
     def player_input(self): #Player controls
         if (keys[pygame.K_SPACE] or mouse) and self.rect.bottom >= 300:
             self.gravity =-20
@@ -95,7 +91,7 @@ class Obstacle (pygame.sprite.Sprite): #Obstacles (snails and flies) class
         self.animation_state()
         self.rect.x -= 6
         self.destroy()
-        
+
 #Functions
 def display_score(): #This function displays the score while u are playing, basically
     current_time = int(pygame.time.get_ticks()/100 - start_time)
@@ -108,7 +104,7 @@ def collision_sprite(): #Function that returns True if the player collides with 
     if pygame.sprite.spritecollide(player.sprite,obstacle_group,True):
         obstacle_group.empty()
         return False
-    else: 
+    else:
         return True
 
 
@@ -124,7 +120,7 @@ game_active = False
 start_time = 0
 score = 0
 
-#Open high score json file
+#Opens high score json file
 high_score_file=open("high_score.json", "r")
 high_score = json.load(high_score_file)
 
@@ -150,7 +146,7 @@ player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alp
 player_stand = pygame.transform.rotozoom(player_stand,0,2)
 player_stand_rect = player_stand.get_rect(center=(400,200))
 
-#Titlle rectangle 
+#Titlle rectangle
 tittle_surface = text_font.render ('Snail jumping game', False, (111,196,169))
 tittle_rect = tittle_surface.get_rect(center= (400,50))
 
@@ -161,14 +157,16 @@ instructions_surface_2 = text_font.render ('Use SPACE or left click to jump', Fa
 instructions_rect_2 = tittle_surface.get_rect(center= (330,360))
 
 #Music
-background_music = pygame.mixer.Sound('audio/music.wav')
+background_music = pygame.mixer.Sound('audio/level1.wav') #Level music
+title_music = pygame.mixer.Sound('audio/title_screen.wav') #Tittle music
+ending_music = pygame.mixer.Sound('audio/ending.wav') #Endign music
 
 #Timer fir obstacles
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer,1500)
 
-#Level initialize checker 
-level_starts = True
+#Level initialize checker so the music is played just once at a time
+level_starts = False
 
 
 while True:
@@ -181,13 +179,13 @@ while True:
         # Allows user to close the game properly
         if event.type == pygame.QUIT:
             pygame.quit()
-            exit() 
+            exit()
 
         #Restart game mechanics
         if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and game_active == False):
             game_active = True
             start_time = int(pygame.time.get_ticks()/100 - start_time)
-        
+
         #Enemies spawn
         if game_active:
             if event.type == obstacle_timer:
@@ -211,17 +209,39 @@ while True:
         game_active = collision_sprite()
 
         #Music settings
+        #Level background music
         if level_starts:
             level_starts = False
+
+            #Stops any other music
+            ending_music.stop()
+            title_music.stop()
+
+            #Plays music
             background_music.play()
             background_music.play(loops = -1)
             background_music.set_volume(0.1)
 
+        #Ending game music
         if game_active == False:
             background_music.stop()
             level_starts = True
 
+            #Plays ending music
+            ending_music.play()
+            ending_music.play(loops = -1)
+            ending_music.set_volume(0.2)
+
     else:
+        #Music settings
+        #Tittle music
+        if level_starts == False:
+            title_music.play()
+            title_music.play(loops = -1)
+            title_music.set_volume(0.125)
+            level_starts = True
+
+        #Selector de dificultad. Debería ser una función o así. Debe tener como dos tipos ezpz and hard. y esto va setear el timer
         #Overscreen
         screen.fill((94,129,162))
         screen.blit(player_stand, player_stand_rect)
@@ -237,8 +257,15 @@ while True:
 
         #Overscreen for the first time you play
         if score == 0:
+            #Show instructions
             screen.blit(instructions_surface,instructions_rect)
             screen.blit(instructions_surface_2,instructions_rect_2)
+
+
+            if level_starts == False:
+                background_music.play()
+                background_music.play(loops = -1)
+                background_music.set_volume(0.1)
         #Overscreen after you lose
         else:
             screen.blit(score_message,score_message_rect)
@@ -248,9 +275,6 @@ while True:
                 json.dump({"high_score" :score}, high_score_file, indent=1)
                 high_score_file.close()
             screen.blit(high_score_message,high_score_message_rect)
-            
-
-
 
     #Stuff needed
     pygame.display.update() #Game display
