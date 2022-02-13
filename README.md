@@ -7,6 +7,9 @@ Code is based on <a href="https://github.com/clear-code-projects/UltimatePygameI
 ## Patch Notes
 
 ### Version 1.1 (<a href="https://github.com/maria-celticfort/snail-jumping-game/tree/develop">WIP</a>)
+
+Game modes and cool stuff added
+
 <ul>
   <li>Added new game mode. Hard mode make enemies spawn way faster than default mode</li>
   <li>Added game mode selector (for the new game mode, this was kinda obvious...)</li>
@@ -17,6 +20,9 @@ Code is based on <a href="https://github.com/clear-code-projects/UltimatePygameI
 </ul>
 
 ### Version 1.0 (<a href="https://github.com/maria-celticfort/snail-jumping-game/tree/v1.0">v1.0</a>)
+
+First playable version
+
 <ul>
   <li>Game works properly</li>
   <li>User can play with SPACEBAR or mouse-left click</li>
