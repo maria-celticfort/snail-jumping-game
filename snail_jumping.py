@@ -35,7 +35,7 @@ class Player (pygame.sprite.Sprite): #Player class
         self.jump_sound.set_volume(0.075)
 
     def player_input(self): #Player controls
-        if (keys[pygame.K_SPACE] or mouse) and self.rect.bottom >= 300:
+        if keys[pygame.K_SPACE] and self.rect.bottom >= 300:
             self.gravity =-20
             self.jump_sound.play()
 
@@ -107,6 +107,16 @@ def collision_sprite(): #Function that returns True if the player collides with 
     else:
         return True
 
+def set_game_mode(default): #Game mode sets obstacles timer
+    if default: #Default (True) mode is the default mode
+        obstacle_timer = pygame.USEREVENT + 1
+        pygame.time.set_timer(obstacle_timer,1500)
+    else: #Default (False) is harder than the default one
+        obstacle_timer = pygame.USEREVENT + 1
+        pygame.time.set_timer(obstacle_timer,900)
+
+    return obstacle_timer
+
 
 #Basic stuff needed
 pygame.init()# Initialize pygames modules
@@ -120,7 +130,7 @@ game_active = False
 start_time = 0
 score = 0
 
-#Opens high score json file
+#Opens high score json file and save that value in a local variable
 high_score_file=open("high_score.json", "r")
 high_score = json.load(high_score_file)
 
@@ -146,6 +156,7 @@ player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alp
 player_stand = pygame.transform.rotozoom(player_stand,0,2)
 player_stand_rect = player_stand.get_rect(center=(400,200))
 
+#Text rectangles
 #Titlle rectangle
 tittle_surface = text_font.render ('Snail jumping game', False, (111,196,169))
 tittle_rect = tittle_surface.get_rect(center= (400,50))
@@ -153,26 +164,34 @@ tittle_rect = tittle_surface.get_rect(center= (400,50))
 #Instructions rectangles
 instructions_surface = text_font.render ('Press ENTER to start', False, (111,196,169))
 instructions_rect = tittle_surface.get_rect(center= (390,320))
-instructions_surface_2 = text_font.render ('Use SPACE or left click to jump', False, (111,196,169))
-instructions_rect_2 = tittle_surface.get_rect(center= (330,360))
+instructions_surface_2 = text_font.render ('Select a game mode and use SPACE to jump', False, (111,196,169))
+instructions_rect_2 = tittle_surface.get_rect(center= (230,360))
+
+#Game mode selector rectangles
+game_mode_surface = text_font.render ('Game modes: ', False, (111,196,169))
+game_mode_rect = game_mode_surface.get_rect(center= (620,145))
+default_mode_surface = text_font.render ('*Default mode', False, (111,196,169))
+default_mode_rect = default_mode_surface.get_rect(center= (630,205))
+hard_mode_surface = text_font.render ('*Hard mode', False, (111,196,169))
+hard_mode_rect = hard_mode_surface.get_rect(center= (615,275))
 
 #Music
 background_music = pygame.mixer.Sound('audio/level1.wav') #Level music
 title_music = pygame.mixer.Sound('audio/title_screen.wav') #Tittle music
 ending_music = pygame.mixer.Sound('audio/ending.wav') #Endign music
 
-#Timer fir obstacles
-obstacle_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstacle_timer,1500)
-
 #Level initialize checker so the music is played just once at a time
 level_starts = False
 
 
 while True:
-    #Input mechanisms
+    #Input  keys mechanisms
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()[0]
+    mouse_pos = pygame.mouse.get_pos()
+
+    default_mode = (default_mode_rect.collidepoint(mouse_pos) and mouse)
+    fast_mode = (hard_mode_rect.collidepoint(mouse_pos) and mouse)
 
     # Collects all game events
     for event in pygame.event.get():
@@ -182,15 +201,20 @@ while True:
             exit()
 
         #Restart game mechanics
-        if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and game_active == False):
+        if (default_mode or fast_mode) and game_active == False:
+            if default_mode:
+                game_mode=set_game_mode(True) #True -> Default mode True
+            elif fast_mode:
+                game_mode=set_game_mode(False) #False -> Default mode False (fast mode)
+
             game_active = True
             start_time = int(pygame.time.get_ticks()/100 - start_time)
 
         #Enemies spawn
         if game_active:
-            if event.type == obstacle_timer:
+            if event.type == game_mode:
                 obstacle_group.add(Obstacle(choice(['fly','snail', 'snail'])))
-
+            
     if game_active:
         #Background (sky and ground) and score display
         screen.blit(sky_surface, (0, 0))
@@ -211,6 +235,7 @@ while True:
         #Music settings
         #Level background music
         if level_starts:
+            pygame.mouse.set_visible(False)
             level_starts = False
 
             #Stops any other music
@@ -224,6 +249,7 @@ while True:
 
         #Ending game music
         if game_active == False:
+            pygame.mouse.set_visible(True)
             background_music.stop()
             level_starts = True
 
@@ -241,31 +267,31 @@ while True:
             title_music.set_volume(0.125)
             level_starts = True
 
-        #Selector de dificultad. Debería ser una función o así. Debe tener como dos tipos ezpz and hard. y esto va setear el timer
         #Overscreen
         screen.fill((94,129,162))
         screen.blit(player_stand, player_stand_rect)
         start_time = 0
+        screen.blit(tittle_surface,tittle_rect)
 
+        #Screen difficulty mode
+        screen.blit(game_mode_surface, game_mode_rect)
+        screen.blit(default_mode_surface, default_mode_rect)
+        screen.blit(hard_mode_surface, hard_mode_rect)
+
+        #Score rectangle
         score_message = text_font.render (f'Your score: {score}', False, (111,196,169))
         score_message_rect = score_message.get_rect(center=(400,330))
 
+        #High score rectangle
         high_score_message = text_font.render (f'High score: {actual_high_score}', False, (111,196,169))
         high_score_message_rect = high_score_message.get_rect(center=(400,370))
-
-        screen.blit(tittle_surface,tittle_rect)
 
         #Overscreen for the first time you play
         if score == 0:
             #Show instructions
-            screen.blit(instructions_surface,instructions_rect)
+            #screen.blit(instructions_surface,instructions_rect)
             screen.blit(instructions_surface_2,instructions_rect_2)
 
-
-            if level_starts == False:
-                background_music.play()
-                background_music.play(loops = -1)
-                background_music.set_volume(0.1)
         #Overscreen after you lose
         else:
             screen.blit(score_message,score_message_rect)
