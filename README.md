@@ -1,4 +1,4 @@
-# Snail jumping game
+# Snail jumping game 🐌🎮
 
 Runner-like game developed with Pygame 2.1.2
 
