@@ -6,7 +6,7 @@ Code is based on <a href="https://github.com/clear-code-projects/UltimatePygameI
 
 ## Patch Notes
 
-### Version 1.1 (<a href="https://github.com/maria-celticfort/snail-jumping-game/tree/develop">WIP</a>)
+### Version 1.1 Experimental(<a href="https://github.com/maria-celticfort/snail-jumping-game/releases/tag/v1.1-experimental">v1.1-experimental</a>)
 
 Game modes and cool stuff added
 
@@ -17,6 +17,7 @@ Game modes and cool stuff added
   <li>Added new tracks: title music and ending music</li>
   <li>Deleted useless code</li>
   <li>Disabled mouse left-click playing because of glitching</li>
+  <li>UI improvement </li>
 </ul>
 
 ### Version 1.0 (<a href="https://github.com/maria-celticfort/snail-jumping-game/tree/v1.0">v1.0</a>)
