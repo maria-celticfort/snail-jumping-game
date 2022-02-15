@@ -6,7 +6,7 @@ Code is based on <a href="https://github.com/clear-code-projects/UltimatePygameI
 
 ## Patch Notes
 
-### Version 1.1 Experimental(<a href="https://github.com/maria-celticfort/snail-jumping-game/releases/tag/v1.1-experimental">v1.1-experimental</a>)
+### Version 1.1 Experimental (<a href="https://github.com/maria-celticfort/snail-jumping-game/releases/tag/v1.1-experimental">v1.1-experimental</a>)
 
 Game modes and cool stuff added
 
