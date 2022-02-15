@@ -190,8 +190,8 @@ while True:
     mouse = pygame.mouse.get_pressed()[0]
     mouse_pos = pygame.mouse.get_pos()
 
-    default_mode = (default_mode_rect.collidepoint(mouse_pos) and mouse)
-    fast_mode = (hard_mode_rect.collidepoint(mouse_pos) and mouse)
+    default_mode = (default_mode_rect.collidepoint(mouse_pos))
+    fast_mode = (hard_mode_rect.collidepoint(mouse_pos))
 
     # Collects all game events
     for event in pygame.event.get():
@@ -201,7 +201,7 @@ while True:
             exit()
 
         #Restart game mechanics
-        if (default_mode or fast_mode) and game_active == False:
+        if (default_mode or fast_mode) and mouse and game_active == False:
             if default_mode:
                 game_mode=set_game_mode(True) #True -> Default mode True
             elif fast_mode:
@@ -209,6 +209,8 @@ while True:
 
             game_active = True
             start_time = int(pygame.time.get_ticks()/100 - start_time)
+
+
 
         #Enemies spawn
         if game_active:
@@ -259,6 +261,7 @@ while True:
             ending_music.set_volume(0.2)
 
     else:
+
         #Music settings
         #Tittle music
         if level_starts == False:
@@ -274,6 +277,13 @@ while True:
         screen.blit(tittle_surface,tittle_rect)
 
         #Screen difficulty mode
+        #A rectangle appears when the cursor is over default or hard selector. Teeny tiny improvement.
+        if default_mode:
+            pygame.draw.rect(screen, 'White', default_mode_rect,16,2)
+        elif fast_mode:
+            pygame.draw.rect(screen, 'White', hard_mode_rect,16,2)
+
+        #Difficulty modes
         screen.blit(game_mode_surface, game_mode_rect)
         screen.blit(default_mode_surface, default_mode_rect)
         screen.blit(hard_mode_surface, hard_mode_rect)
